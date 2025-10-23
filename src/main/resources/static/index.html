@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Live Scores</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 42px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: #2980b9;
+        }
+        
+        .nav-btn.active {
+            background: #27ae60;
+        }
+        
+        .back-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #7f8c8d;
+        }
+        
+        .matches-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .match-card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #ecf0f1;
+        }
+        
+        .match-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .series-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .series-name {
+            font-weight: 600;
+            color: #34495e;
+            font-size: 20px;
+        }
+        
+        .match-type {
+            font-size: 16px;
+            color: #95a5a6;
+            margin-top: 4px;
+        }
+        
+        .match-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-live {
+            background: #ffe5e5;
+            color: #e74c3c;
+        }
+        
+        .status-completed {
+            background: #e8f5e9;
+            color: #27ae60;
+        }
+        
+        .status-upcoming {
+            background: #e3f2fd;
+            color: #3498db;
+        }
+        
+        .teams-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .teams-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .team {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        .team-name {
+            font-weight: 600;
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 6px;
+        }
+        
+        .team-code {
+            font-size: 15px;
+            color: #95a5a6;
+        }
+        
+        .vs-divider {
+            color: #bdc3c7;
+            font-weight: 300;
+            font-size: 18px;
+        }
+        
+        .match-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 16px;
+            color: #7f8c8d;
+            padding-top: 12px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .venue-info {
+            background: #e8f4f8;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .venue-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .venue-location {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+
+        
+        /* Scorecard Styles */
+        .scorecard-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .scorecard-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .scorecard-teams {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .scorecard-team {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .scorecard-team-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        .scorecard-team-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .scorecard-vs {
+            color: #95a5a6;
+            font-size: 18px;
+            font-weight: 300;
+        }
+        
+        .scorecard-title {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .scorecard-venue-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scorecard-venue-name {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .scorecard-venue-details {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 15px;
+            opacity: 0.95;
+        }
+        
+        .match-result {
+            background: #e8f5e9;
+            color: #27ae60;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        .innings-section {
+            margin-bottom: 40px;
+        }
+        
+        .innings-header {
+            background: #3498db;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .innings-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .innings-score {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: white;
+        }
+        
+        th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+            padding: 14px;
+            text-align: left;
+            border-bottom: 2px solid #ecf0f1;
+            font-size: 15px;
+        }
+        
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #ecf0f1;
+            color: #34495e;
+            font-size: 15px;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .player-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .dismissal-info {
+            color: #7f8c8d;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+        
+        .not-out {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 20px;
+            color: #7f8c8d;
+        }
+        
+        .error {
+            background: #fadbd8;
+            color: #c0392b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c0392b;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Cricket Live Scores</h1>
+            <p>Real-time match updates and detailed scorecards</p>
+        </div>
+        
+        <div class="nav-buttons" id="nav-buttons">
+            <button class="nav-btn active" onclick="showMatches()">View Matches</button>
+            <button class="nav-btn" onclick="showAddMatch()">Add Match</button>
+        </div>
+        
+        <div id="matches-view">
+            <div class="matches-grid" id="matches-container"></div>
+        </div>
+        
+        <div id="add-match-view" class="hidden">
+            <div class="scorecard-container">
+                <h2 style="font-size: 28px; color: #2c3e50; margin-bottom: 24px;">Add New Match</h2>
+                <div id="form-message"></div>
+                <form id="matchForm" onsubmit="submitMatch(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Series Name *</label>
+                            <input type="text" name="seriesName" required style="width: 100%; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px; font-size: 16px;">
+                        </div>
+                        <div>
+                            <label style="display: block; color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Match Type *</label>
+                            <select name="matchType" required style="width: 100%; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px; font-size: 16px;">
+                                <option>TEST</option>
+                                <option>ODI</option>
+                                <option>T20</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Team 1 *</label>
+                            <input type="text" name="team1" placeholder="e.g., India" required style="width: 100%; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px; font-size: 16px;">
+                        </div>
+                        <div>
+                            <label style="display: block; color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Team 1 Code *</label>
+                            <input type="text" name="team1Code" placeholder="e.g., IND" maxlength="3" required style="width: 100%; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px; font-size: 16px;">
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Team 2 *</label>
+                            <input type="text" name="team2" placeholder="e.g., Australia" required style="width: 100%; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px; font-size: 16px;">
+                        </div>
+                        <div>
+                            <label style="display: block; color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Team 2 Code *</label>
+                            <input type="text" name="team2Code" placeholder="e.g., AUS" maxlength="3" required style="width: 100%; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px; font-size: 16px;">
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Match Date *</label>
+                            <input type="date" name="matchDate" required style="width: 100%; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px; font-size: 16px;">
+                        </div>
+                        <div>
+                            <label style="display: block; color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Match Time</label>
+                            <input type="time" name="matchTime" style="width: 100%; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px; font-size: 16px;">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Match Status *</label>
+                        <select name="matchStatus" required style="width: 100%; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px; font-size: 16px;">
+                            <option>UPCOMING</option>
+                            <option>LIVE</option>
+                            <option>COMPLETED</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" style="width: 100%; background: #27ae60; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        Add Match
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div id="scorecard-view" class="hidden">
+            <button class="back-btn" onclick="showMatches()">← Back to Matches</button>
+            <div id="scorecard-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8090/api';
+        
+        loadMatches();
+        
+        function showMatches() {
+            document.getElementById('matches-view').classList.remove('hidden');
+            document.getElementById('add-match-view').classList.add('hidden');
+            document.getElementById('scorecard-view').classList.add('hidden');
+            document.getElementById('nav-buttons').classList.remove('hidden');
+            
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons[0].classList.add('active');
+            buttons[1].classList.remove('active');
+            
+            loadMatches();
+        }
+        
+        function showAddMatch() {
+            document.getElementById('matches-view').classList.add('hidden');
+            document.getElementById('add-match-view').classList.remove('hidden');
+            document.getElementById('scorecard-view').classList.add('hidden');
+            document.getElementById('nav-buttons').classList.remove('hidden');
+            
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons[0].classList.remove('active');
+            buttons[1].classList.add('active');
+        }
+        
+        async function loadMatches() {
+            try {
+                const container = document.getElementById('matches-container');
+                container.innerHTML = '<div class="loading">Loading matches...</div>';
+                
+                const response = await fetch(`${API_BASE_URL}/matches`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const matches = await response.json();
+                displayMatches(matches);
+            } catch (error) {
+                console.error('Error loading matches:', error);
+                document.getElementById('matches-container').innerHTML = 
+                    '<div class="error">Unable to load matches. Please check if the server is running.</div>';
+            }
+        }
+        
+        function displayMatches(matches) {
+            const container = document.getElementById('matches-container');
+            
+            if (!matches || matches.length === 0) {
+                container.innerHTML = '<div class="loading">No matches available</div>';
+                return;
+            }
+            
+            container.innerHTML = matches.map(match => {
+                // Build venue HTML
+                let venueHtml = '';
+                if (match.venue) {
+                    venueHtml = `
+                        <div class="venue-info">
+                            <div class="venue-name">🏟️ ${match.venue.venueName}</div>
+                            <div class="venue-location">📍 ${match.venue.city}, ${match.venue.country}</div>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="match-card" onclick="loadScorecard(${match.matchId})">
+                        <div class="match-header">
+                            <div class="series-info">
+                                <span class="series-name">${match.seriesName}</span>
+                                <span class="match-type">${match.matchType}</span>
+                            </div>
+                            <span class="match-status status-${match.matchStatus.toLowerCase()}">
+                                ${match.matchStatus}
+                            </span>
+                        </div>
+                        
+                        <div class="teams-section">
+                            <div class="teams-display">
+                                <div class="team">
+                                    ${match.team1.logoUrl ? `<img src="${match.team1.logoUrl}" alt="${match.team1.teamName}" class="team-logo" onerror="this.style.display='none'">` : ''}
+                                    <div class="team-name">${match.team1.teamName}</div>
+                                    <div class="team-code">${match.team1.teamCode}</div>
+                                </div>
+                                <div class="vs-divider">VS</div>
+                                <div class="team">
+                                    ${match.team2.logoUrl ? `<img src="${match.team2.logoUrl}" alt="${match.team2.teamName}" class="team-logo" onerror="this.style.display='none'">` : ''}
+                                    <div class="team-name">${match.team2.teamName}</div>
+                                    <div class="team-code">${match.team2.teamCode}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${venueHtml}
+                        
+                        <div class="match-meta">
+                            <div>📅 ${match.matchDate || 'TBA'}</div>
+                            ${match.matchTime ? `<div>🕐 ${match.matchTime}</div>` : ''}
+                            ${match.resultDescription ? `<div>🏆 ${match.resultDescription}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        async function loadScorecard(matchId) {
+            try {
+                document.getElementById('matches-view').classList.add('hidden');
+                document.getElementById('add-match-view').classList.add('hidden');
+                document.getElementById('scorecard-view').classList.remove('hidden');
+                document.getElementById('nav-buttons').classList.add('hidden');
+                
+                const container = document.getElementById('scorecard-container');
+                container.innerHTML = '<div class="loading">Loading scorecard...</div>';
+                
+                const response = await fetch(`${API_BASE_URL}/matches/${matchId}/scorecard`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const scorecard = await response.json();
+                displayScorecard(scorecard);
+            } catch (error) {
+                console.error('Error loading scorecard:', error);
+                document.getElementById('scorecard-container').innerHTML = 
+                    '<div class="error">Unable to load scorecard. Please try again.</div>';
+            }
+        }
+        
+        async function submitMatch(event) {
+            event.preventDefault();
+            const form = document.getElementById('matchForm');
+            const formMessage = document.getElementById('form-message');
+            
+            try {
+                const formData = new FormData(form);
+                const matchData = {
+                    seriesName: formData.get('seriesName'),
+                    matchType: formData.get('matchType'),
+                    matchDate: formData.get('matchDate'),
+                    matchTime: formData.get('matchTime'),
+                    matchStatus: formData.get('matchStatus'),
+                    team1: {
+                        teamName: formData.get('team1'),
+                        teamCode: formData.get('team1Code')
+                    },
+                    team2: {
+                        teamName: formData.get('team2'),
+                        teamCode: formData.get('team2Code')
+                    }
+                };
+                
+                const response = await fetch(`${API_BASE_URL}/matches/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(matchData)
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                formMessage.innerHTML = '<div class="success" style="background: #d5f4e6; color: #27ae60; padding: 15px; border-radius: 8px; margin-bottom: 20px;">Match added successfully!</div>';
+                form.reset();
+                
+                setTimeout(() => {
+                    showMatches();
+                }, 1500);
+            } catch (error) {
+                console.error('Error adding match:', error);
+                formMessage.innerHTML = '<div class="error">Failed to add match. Please try again.</div>';
+            }
+        }
+        
+        function displayScorecard(scorecard) {
+            const container = document.getElementById('scorecard-container');
+            const match = scorecard.matchDetails;
+            
+            // Build venue section for scorecard
+            let venueSection = '';
+            if (match.venue) {
+                venueSection = `
+                    <div class="scorecard-venue-section">
+                        <div class="scorecard-venue-name">${match.venue.venueName}</div>
+                        <div class="scorecard-venue-details">
+                            <span>📍 ${match.venue.city}, ${match.venue.country}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let html = `
+                <div class="scorecard-container">
+                    <div class="scorecard-header">
+                        <h2 class="scorecard-title">${match.seriesName}</h2>
+                        <div class="scorecard-teams">
+                            <div class="scorecard-team">
+                                ${match.team1.logoUrl ? `<img src="${match.team1.logoUrl}" alt="${match.team1.teamName}" class="scorecard-team-logo" onerror="this.style.display='none'">` : ''}
+                                <span class="scorecard-team-name">${match.team1.teamName}</span>
+                            </div>
+                            <span class="scorecard-vs">VS</span>
+                            <div class="scorecard-team">
+                                ${match.team2.logoUrl ? `<img src="${match.team2.logoUrl}" alt="${match.team2.teamName}" class="scorecard-team-logo" onerror="this.style.display='none'">` : ''}
+                                <span class="scorecard-team-name">${match.team2.teamName}</span>
+                            </div>
+                        </div>
+                        <p style="color: #95a5a6; font-size: 16px; text-align: center;">
+                            📅 ${match.matchDate} ${match.matchTime ? '• 🕐 ' + match.matchTime : ''} • 
+                            <span class="match-status status-${match.matchStatus.toLowerCase()}" style="margin-left: 10px;">
+                                ${match.matchStatus}
+                            </span>
+                        </p>
+                        ${match.resultDescription ? 
+                            `<div class="match-result">🏆 ${match.resultDescription}</div>` 
+                            : ''}
+                    </div>
+                    
+                    ${venueSection}
+            `;
+            
+            if (scorecard.innings && scorecard.innings.length > 0) {
+                scorecard.innings.forEach(innings => {
+                    html += `
+                        <div class="innings-section">
+                            <div class="innings-header">
+                                <span class="innings-title">${innings.battingTeam} Innings</span>
+                                <span class="innings-score">
+                                    ${innings.totalRuns}/${innings.totalWickets} 
+                                    (${innings.totalOvers} overs)
+                                </span>
+                            </div>
+                            
+                            <h3 class="section-title">⚡ Batting</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Batsman</th>
+                                        <th style="text-align: center;">R</th>
+                                        <th style="text-align: center;">B</th>
+                                        <th style="text-align: center;">4s</th>
+                                        <th style="text-align: center;">6s</th>
+                                        <th style="text-align: center;">SR</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    innings.battingScores.forEach(score => {
+                        html += `
+                            <tr>
+                                <td>
+                                    <div class="player-name">${score.playerName}</div>
+                                    ${score.dismissalInfo ? 
+                                        `<div class="dismissal-info">${score.dismissalInfo}</div>` 
+                                        : '<div class="not-out">not out</div>'}
+                                </td>
+                                <td style="text-align: center; font-weight: 600;">${score.runsScored}</td>
+                                <td style="text-align: center;">${score.ballsFaced}</td>
+                                <td style="text-align: center;">${score.fours}</td>
+                                <td style="text-align: center;">${score.sixes}</td>
+                                <td style="text-align: center;">${score.strikeRate ? score.strikeRate.toFixed(2) : '-'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `
+                                </tbody>
+                            </table>
+                            
+                            <h3 class="section-title">🎯 Bowling</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Bowler</th>
+                                        <th style="text-align: center;">O</th>
+                                        <th style="text-align: center;">M</th>
+                                        <th style="text-align: center;">R</th>
+                                        <th style="text-align: center;">W</th>
+                                        <th style="text-align: center;">Econ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    innings.bowlingScores.forEach(score => {
+                        html += `
+                            <tr>
+                                <td class="player-name">${score.playerName}</td>
+                                <td style="text-align: center;">${score.oversBowled}</td>
+                                <td style="text-align: center;">${score.maidens}</td>
+                                <td style="text-align: center;">${score.runsConceded}</td>
+                                <td style="text-align: center; font-weight: 600;">${score.wicketsTaken}</td>
+                                <td style="text-align: center;">${score.economyRate ? score.economyRate.toFixed(2) : '-'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<div class="loading">No innings data available</div>';
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        setInterval(() => {
+            if (!document.getElementById('matches-view').classList.contains('hidden')) {
+                loadMatches();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
